@@ -1,0 +1,11 @@
+{
+    "brand": {
+      "siteName": "Agency Startup",
+      "primaryColor": "#000000",
+      "borderRadius": "8",
+      "logo": "/logo.png"
+    },
+    "theme": {
+      "fontFamily": "Inter"
+    }
+  }

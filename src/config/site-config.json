@@ -1,0 +1,15 @@
+{
+    "theme": {
+      "primaryColor": "#3b82f6",
+      "borderRadius": 8
+    },
+    "brand": {
+      "name": "My Agency"
+    },
+    "pages": {
+      "index": [
+        { "type": "Hero01", "content": { "title": "Static Success", "subtitle": "JSON is working" } },
+        { "type": "Features01", "content": { "title": "Static Success", "subtitle": "JSON is working", "items": [] } }
+      ]
+    }
+  }
