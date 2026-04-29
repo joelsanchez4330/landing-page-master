@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // This is still good to have
+  // Keeps heavy packages out of the client bundle
   serverExternalPackages: ["uploadthing", "@uploadthing/react"],
   
   images: {
@@ -10,14 +10,20 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "utfs.io",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
     ],
+  },
+  // This helps Webpack handle the ESM/CJS mismatch in UploadThing
+  webpack: (config) => {
+    config.externals.push({
+      "utf-8-validate": "commonjs utf-8-validate",
+      bufferutil: "commonjs bufferutil",
+    });
+    return config;
   },
 };
 
 export default nextConfig;
-
-module.exports = {
-  images: {
-    domains: ['res.cloudinary.com'],
-  },
-}

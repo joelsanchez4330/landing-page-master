@@ -4,13 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build",
+    "build": "next build --webpack", 
     "start": "next start",
     "lint": "next lint",
     "db:push": "drizzle-kit push",
     "seed": "tsx src/db/seed.ts",
     "db:studio": "drizzle-kit studio"
-  },
+    },
   "dependencies": {
     "@clerk/nextjs": "^7.2.7",
     "@libsql/client": "^0.17.3",
