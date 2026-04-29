@@ -1,9 +1,15 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-// 1. Define what is strictly Admin
+// 1. Define strictly protected areas
 const isAdminRoute = createRouteMatcher(['/admin(.*)']);
-// 2. Define what is strictly Public (Home and all slugs)
-const isPublicRoute = createRouteMatcher(['/', '/(.*)']);
+
+// 2. Define strictly public areas (Home, Sign-in, Sign-up, and your dynamic client slugs)
+const isPublicRoute = createRouteMatcher([
+  '/', 
+  '/sign-in(.*)', 
+  '/sign-up(.*)', 
+  '/api/uploadthing(.*)' // Important if you use UploadThing!
+]);
 
 export default clerkMiddleware(async (auth, req) => {
   // Only protect if it's an admin route AND NOT a public route
