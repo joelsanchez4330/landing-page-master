@@ -20,19 +20,19 @@ export default clerkMiddleware(async (auth, req) => {
    * To "Grey it out" (disable) for testing, simply highlight this block 
    * and press Ctrl + / (or Cmd + /) to comment it out.
    */
-  if (req.nextUrl.pathname.startsWith('/api/generate')) {
-    const ip = req.headers.get('x-forwarded-for')?.split(',')[0] ?? '127.0.0.1';
-    const now = Date.now();
-    const lastRequest = trackers.get(ip) ?? 0;
+  // if (req.nextUrl.pathname.startsWith('/api/generate')) {
+  //   const ip = req.headers.get('x-forwarded-for')?.split(',')[0] ?? '127.0.0.1';
+  //   const now = Date.now();
+  //   const lastRequest = trackers.get(ip) ?? 0;
 
-    if (now - lastRequest < RATE_LIMIT_MS) {
-      return new NextResponse(
-        JSON.stringify({ error: 'Slow down! One request every 5 seconds allowed.' }),
-        { status: 429, headers: { 'content-type': 'application/json' } }
-      );
-    }
-    trackers.set(ip, now);
-  }
+  //   if (now - lastRequest < RATE_LIMIT_MS) {
+  //     return new NextResponse(
+  //       JSON.stringify({ error: 'Slow down! One request every 5 seconds allowed.' }),
+  //       { status: 429, headers: { 'content-type': 'application/json' } }
+  //     );
+  //   }
+  //   trackers.set(ip, now);
+  // }
   // --- END RATE LIMITER ---
 
   if (isAdminRoute(req)) {
