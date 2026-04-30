@@ -5,31 +5,36 @@ import { getLiveConfig } from "@/db/fallback";
 import { notFound } from "next/navigation";
 
 export default async function RootPage() {
-  // 1. Get the domain name from the browser headers
   const headersList = await headers();
   const host = headersList.get('host') || "";
 
-  /**
-   * 2. Extract the slug from the subdomain.
-   * Example: "luminous-aesthetics.vercel.app" -> "luminous-aesthetics"
-   * Example: "blue-wave-plumbing.com" -> "blue-wave-plumbing"
-   */
-  const clientSlug = host.split('.')[0];
+  // 1. Better Slug Extraction
+  let finalSlug = "";
 
-  // 3. Fallback for your main "Factory" domain (e.g., if you visit your main site)
-  const finalSlug = (clientSlug === 'localhost:3000' || clientSlug === 'your-main-domain') 
-    ? (process.env.NEXT_PUBLIC_DEFAULT_CLIENT_SLUG || 'index')
-    : clientSlug;
+  if (host.includes('localhost:3000')) {
+    // If testing locally, use your env default or a hardcoded test slug
+    finalSlug = process.env.NEXT_PUBLIC_DEFAULT_CLIENT_SLUG || 'blue-wave-plumbing';
+  } else {
+    // In production: "luminous-aesthetics.vercel.app" -> "luminous-aesthetics"
+    // Also works for custom domains: "plumbing.com" -> "plumbing"
+    finalSlug = host.split('.')[0];
+  }
 
-  // 4. Fetch the data exactly like you did before
-  const page = await getSiteConfig(finalSlug);
-  const globalConfig = await getLiveConfig();
+  // 2. Fetch Data
+  const [page, globalConfig] = await Promise.all([
+    getSiteConfig(finalSlug),
+    getLiveConfig()
+  ]);
 
-  if (!page) return notFound();
+  // 3. Robust 404 Check
+  if (!page) {
+    console.error(`[Factory Error] No DB record found for slug: "${finalSlug}" on host: "${host}"`);
+    return notFound();
+  }
 
   return (
-    <main>
-      {page.sections.map((section: any) => (
+    <main className="min-h-screen">
+      {page.sections?.map((section: any) => (
         <SectionDispatcher 
           key={section.id} 
           section={section} 
