@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { headers } from 'next/headers';
 import { getSiteConfig } from "@/lib/actions";
 import SectionDispatcher from "@/components/dispatcher";
@@ -7,33 +9,31 @@ import { notFound } from "next/navigation";
 export default async function RootPage() {
   const headersList = await headers();
   const host = headersList.get('host') || "";
-
-  // 1. Better Slug Extraction
+  
   let finalSlug = "";
 
-  if (host.includes('localhost:3000')) {
-    // If testing locally, use your env default or a hardcoded test slug
-    finalSlug = process.env.NEXT_PUBLIC_DEFAULT_CLIENT_SLUG || 'blue-wave-plumbing';
-  } else {
-    // In production: "luminous-aesthetics.vercel.app" -> "luminous-aesthetics"
-    // Also works for custom domains: "plumbing.com" -> "plumbing"
+  // 1. Logic for Local Development
+  if (host.includes('localhost') || host.includes('127.0.0.1')) {
+    finalSlug = process.env.NEXT_PUBLIC_DEFAULT_CLIENT_SLUG || 'luminous-aesthetics';
+  } 
+  // 2. Logic for Vercel Subdomains (e.g., luminous-aesthetics.vercel.app)
+  else {
+    // This takes "luminous-aesthetics.vercel.app" and gives "luminous-aesthetics"
     finalSlug = host.split('.')[0];
   }
 
-  // 2. Fetch Data
-  const [page, globalConfig] = await Promise.all([
-    getSiteConfig(finalSlug),
-    getLiveConfig()
-  ]);
+  // 3. Fetch data from Turso
+  const page = await getSiteConfig(finalSlug);
+  const globalConfig = await getLiveConfig();
 
-  // 3. Robust 404 Check
+  // 4. Handle Missing Pages
   if (!page) {
-    console.error(`[Factory Error] No DB record found for slug: "${finalSlug}" on host: "${host}"`);
+    console.error(`❌ 404 Error: No database entry for slug "${finalSlug}"`);
     return notFound();
   }
 
   return (
-    <main className="min-h-screen">
+    <main>
       {page.sections?.map((section: any) => (
         <SectionDispatcher 
           key={section.id} 
